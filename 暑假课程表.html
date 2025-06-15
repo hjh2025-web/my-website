@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分年级课程信息图表</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1:after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            border-radius: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-top: 15px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filter-btn.active {
+            border-color: transparent;
+            color: white;
+        }
+        
+        .preschool .filter-btn.active { background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%); }
+        .lower-primary .filter-btn.active { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+        .upper-primary .filter-btn.active { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
+        .junior-high .filter-btn.active { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        
+        .grade-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .grade-section {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .grade-section:hover {
+            transform: translateY(-10px);
+        }
+        
+        .section-header {
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .preschool .section-header { background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%); }
+        .lower-primary .section-header { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+        .upper-primary .section-header { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); }
+        .junior-high .section-header { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .section-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .courses-list {
+            padding: 20px;
+        }
+        
+        .course-card {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        .preschool .course-card { border-color: #FF9A9E; }
+        .lower-primary .course-card { border-color: #a1c4fd; }
+        .upper-primary .course-card { border-color: #84fab0; }
+        .junior-high .course-card { border-color: #fcb69f; }
+        
+        .course-card:hover {
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .course-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #555;
+            margin: 10px 0;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0,0,0,0.03);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .course-price {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            font-weight: 500;
+        }
+        
+        .original-price {
+            color: #e74c3c;
+            font-size: 1.1rem;
+        }
+        
+        .discount {
+            background: #f1c40f;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .grade-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .filters {
+                gap: 10px;
+            }
+            
+            .filter-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-book-open"></i> 暑假课程信息图表</h1>
+            <p class="subtitle">按年级分类，不同颜色区分，快速找到适合您的课程</p>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-grade="all"><i class="fas fa-star"></i> 全部课程</button>
+                <button class="filter-btn" data-grade="preschool"><i class="fas fa-child"></i> 幼儿园 (4-6岁)</button>
+                <button class="filter-btn" data-grade="lower-primary"><i class="fas fa-pencil-alt"></i> 小学低年级 (1-3年级)</button>
+                <button class="filter-btn" data-grade="upper-primary"><i class="fas fa-graduation-cap"></i> 小学中高年级 (3-6年级)</button>
+                <button class="filter-btn" data-grade="junior-high"><i class="fas fa-user-graduate"></i> 初中</button>
+            </div>
+        </header>
+        
+        <div class="grade-sections">
+            <!-- 幼儿园 (4-6岁) -->
+            <div class="grade-section preschool">
+                <div class="section-header">
+                    <h2 class="section-title">幼儿园 (4-6岁)</h2>
+                    <p class="section-subtitle">适合学龄前儿童的英语启蒙课程</p>
+                </div>
+                <div class="courses-list">
+                    <div class="course-card">
+                        <h3 class="course-title">外教绘本班</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、二、四、五下午4:40-6:10</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 1.5H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 10次课15课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1700</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 小学低年级 (1-3年级) -->
+            <div class="grade-section lower-primary">
+                <div class="section-header">
+                    <h2 class="section-title">小学低年级 (1-3年级)</h2>
+                    <p class="section-subtitle">基础英语与趣味学习课程</p>
+                </div>
+                <div class="courses-list">
+                    <div class="course-card">
+                        <h3 class="course-title">英语自然拼读法 Phonics1</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、二、四、五上午9:00-11:00</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 15次课30课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥2350</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">探索大世界1A（二升三）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、四上午9:00-11:00</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 12次课24课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1880</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 小学中高年级 (3-6年级) -->
+            <div class="grade-section upper-primary">
+                <div class="section-header">
+                    <h2 class="section-title">小学中高年级 (3-6年级)</h2>
+                    <p class="section-subtitle">同步辅导与能力提升课程</p>
+                </div>
+                <div class="courses-list">
+                    <div class="course-card">
+                        <h3 class="course-title">五年级同步班（四升五）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、三、五下午2:30-4:30</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 8次课16课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1250</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">音标班</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、三、五下午2:30-4:30</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 10次课20课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1568</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">六年级冲刺班（五升六）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、三、五上午9:00-11:00</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 12次课24课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥2230</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">小学语法一、二级</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、二、四、五下午2:30-4:30</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 16次课32课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥2500</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">情境英语表达营（外教口语、听力）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、二、四、五下午2:30-4:30</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 10次课20课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥2300</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h3 class="course-title">四年级同步班（三升四）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、三、五上午9:00-11:00</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 8次课16课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1250</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 初中 -->
+            <div class="grade-section junior-high">
+                <div class="section-header">
+                    <h2 class="section-title">初中</h2>
+                    <p class="section-subtitle">初中生衔接与提升课程</p>
+                </div>
+                <div class="courses-list">
+                    <div class="course-card">
+                        <h3 class="course-title">初一同步班（六升七）</h3>
+                        <div class="course-info">
+                            <div class="info-item"><i class="far fa-calendar-alt"></i> 每周一、三、五上午9:00-11:00</div>
+                            <div class="info-item"><i class="far fa-clock"></i> 2H/次</div>
+                            <div class="info-item"><i class="fas fa-chalkboard-teacher"></i> 10次课20课时</div>
+                        </div>
+                        <div class="course-price">
+                            <span class="original-price">¥1858</span>
+                            <span class="discount">报两科享9折</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-info-circle"></i> 所有课程均提供优惠：报一科享9.5折，报两科享9折优惠</p>
+        </div>
+    </div>
+    
+    <script>
+        // 筛选功能
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // 更新按钮状态
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                const grade = this.getAttribute('data-grade');
+                
+                // 显示/隐藏年级部分
+                document.querySelectorAll('.grade-section').forEach(section => {
+                    if (grade === 'all') {
+                        section.style.display = 'block';
+                    } else {
+                        if (section.classList.contains(grade)) {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // 初始显示所有部分
+        document.querySelectorAll('.grade-section').forEach(section => {
+            section.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

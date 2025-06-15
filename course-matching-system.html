@@ -1,0 +1,241 @@
+<html><head>
+  <meta charset="UTF-8">
+  <title>课程匹配系统</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      color: #ff6b81;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      font-size: 2.5em;
+    }
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 20px 0;
+      border: 2px solid #ff6b81;
+      border-radius: 25px;
+      background-color: white;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 1em;
+      color: #555;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff6b81' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px;
+    }
+    select:focus {
+      outline: none;
+      border-color: #ff4757;
+    }
+    .course-item {
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: 20px;
+      background-color: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 2px solid #ffcccc;
+      transition: transform 0.3s ease;
+    }
+    .course-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    h3 {
+      color: #ff4757;
+      margin-top: 0;
+      font-size: 1.5em;
+    }
+    p {
+      color: #555;
+      margin: 8px 0;
+    }
+    #result {
+      padding: 10px;
+    }
+    .no-result {
+      color: #ff6b81;
+      text-align: center;
+      font-size: 1.2em;
+      padding: 20px;
+      background-color: #fff0f3;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ 大华暑假班课程匹配系统 ✨</h1>
+  <select id="grade-select">
+    <option value="">请选择目前就读的年级</option>
+    <option value="幼儿园（4-6岁）">🎈 幼儿园（4-6岁）</option>
+    <option value="小学1年级（在读1）">📚 小学1年级（在读1年级）</option>
+    <option value="小学2年级（在读2）">📖 小学2年级（在读2年级）</option>
+    <option value="小学3年级（在读3，三升四）">🎒 小学3年级（在读3年级，三升四）</option>
+    <option value="小学4年级（在读4，四升五）">✏️ 小学4年级（在读4年级，四升五）</option>
+    <option value="小学5年级（在读5，五升六）">📓 小学5年级（在读5年级，五升六）</option>
+    <option value="小学6年级（在读6，六升七）">📌 小学6年级（在读6年级，六升七）</option>
+    <option value="初中1年级（在读7，初一）">🎯 初中1年级（在读7年级，初一）</option>
+  </select>
+  <div id="result">请选择年级</div>
+
+  <script>
+    // 课程数据
+    const courses = [
+      {
+        id: 1,
+        name: '英语自然拼读法Phonics1',
+        date: '每周一、二、四、五上午9:00-11:00',
+        grade: '1--2年级',
+        time_per_class: '2H',
+        total_class: '15次课 30课时',
+        price: 2350,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 2,
+        name: '五年级同步班（四升五）',
+        date: '每周一、三、五下午2:30-4:30',
+        grade: '4升5年级',
+        time_per_class: '2H',
+        total_class: '8次课 16课时',
+        price: 1250,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 3,
+        name: '音标班',
+        date: '每周一、三、五下午2:30-4:30',
+        grade: '3年级以上',
+        time_per_class: '2H',
+        total_class: '10次课 20课时',
+        price: 1568,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 4,
+        name: '初一同步班（六升七）',
+        date: '每周一、三、五上午9:00-11:00',
+        grade: '初中生（六升七）',
+        time_per_class: '2H',
+        total_class: '10次课 20课时',
+        price: 1858,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 5,
+        name: '六年级冲刺班（五升六）',
+        date: '每周一、三、五上午9:00-11:00',
+        grade: '5年级升6年级',
+        time_per_class: '2H',
+        total_class: '12次课 24课时',
+        price: 2230,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 6,
+        name: '小学语法一、二级',
+        date: '每周一、二、四、五下午2:30-4:30',
+        grade: '在读3-5年级学员',
+        time_per_class: '2H',
+        total_class: '16次课 32课时',
+        price: 2500,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 7,
+        name: '探索大世界1A（二升三）',
+        date: '每周二、四上午9:00-11:00',
+        grade: '2--3年级',
+        time_per_class: '2H',
+        total_class: '12次课 24课时',
+        price: 1880,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 8,
+        name: '情境英语表达营（外教口语、听力）',
+        date: '每周一、二、四、五下午2:30-4:30',
+        grade: '4--6年级',
+        time_per_class: '2H',
+        total_class: '10次课 20课时',
+        price: 2300,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 9,
+        name: '外教绘本班',
+        date: '每周一、二、四、五下午4:40-6:10',
+        grade: '4-6岁',
+        time_per_class: '1.5H',
+        total_class: '10次课 15课时',
+        price: 1700,
+        discount: '报一科9.5折、两科9折'
+      },
+      {
+        id: 10,
+        name: '四年级同步班（三升四）',
+        date: '每周一、三、五上午9:00-11:00',
+        grade: '三升四年级学员',
+        time_per_class: '2H',
+        total_class: '8次课 16课时',
+        price: 1250,
+        discount: '报一科9.5折、两科9折'
+      }
+    ];
+    
+    // 年级映射
+    const gradeMap = {
+      '幼儿园（4-6岁）': ['4-6岁'],
+      '小学1年级（在读1）': ['1--2年级'],
+      '小学2年级（在读2）': ['1--2年级', '2--3年级'],
+      '小学3年级（在读3，三升四）': ['3年级以上', '在读3-5年级学员', '2--3年级', '三升四年级学员'],
+      '小学4年级（在读4，四升五）': ['4升5年级', '3年级以上', '在读3-5年级学员', '4--6年级'],
+      '小学5年级（在读5，五升六）': ['5年级升6年级', '3年级以上', '在读3-5年级学员', '4--6年级'],
+      '小学6年级（在读6，六升七）': ['3年级以上', '初中生（六升七）', '4--6年级'],
+      '初中1年级（在读7，初一）': ['3年级以上', '初中生（六升七）']
+    };
+
+    const gradeSelect = document.getElementById('grade-select');
+    const resultDiv = document.getElementById('result');
+
+    gradeSelect.addEventListener('change', () => {
+      const selectedGrade = gradeSelect.value;
+      if (!selectedGrade) {
+        resultDiv.innerHTML = '请选择年级';
+        return;
+      }
+      const targetGrades = gradeMap[selectedGrade];
+      const matched = courses.filter(c => targetGrades.includes(c.grade));
+      if (matched.length === 0) {
+        resultDiv.innerHTML = '<div class="no-result">😢 未找到匹配课程</div>';
+        return;
+      }
+      // 渲染课程信息
+      let html = '';
+      matched.forEach(course => {
+        html += `
+          <div class="course-item">
+            <h3>🎓 ${course.name}</h3>
+            <p>⏰ 上课时间：${course.date}</p>
+            <p>👫 适用年级：${course.grade}</p>
+            <p>⌛ 单次时长：${course.time_per_class}</p>
+            <p>📅 总课时：${course.total_class}</p>
+            <p>💴 原价：${course.price}元</p>
+            <p>🎁 优惠：${course.discount}</p>
+          </div>
+        `;
+      });
+      resultDiv.innerHTML = html;
+    });
+  </script>
+
+
+    </body></html>
